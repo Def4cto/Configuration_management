@@ -17,7 +17,7 @@ class ConsoleLogic:
         try:
             command_shlexed = shlex.split(command)
         except ValueError as e:
-            return f"Ошибка парсинга: {e}"
+            return f"Ошибка парсинга"
 
         if not command_shlexed:
             return ""
@@ -25,10 +25,12 @@ class ConsoleLogic:
         cmd = command_shlexed[0]
 
         if cmd == "ls":
-            return f"ls {command_shlexed[1:]}"
+            args = " ".join(command_shlexed[1:])
+            return f"ls {args}".strip()
         elif cmd == "cd":
             if len(command_shlexed) > 1:
-                return f"cd {command_shlexed[1:]}"
+                args = " ".join(command_shlexed[1:])
+                return f"cd {args}"
             else:
                 return "cd: missing operand"
         else:
@@ -42,23 +44,18 @@ class MiniShellGUI:
 
         self.root.title("MiniShell")
 
-        # окно вывода
         self.text = tk.Text(root, height=20, width=80,
                             bg="black", fg="lime", insertbackground="white")
         self.text.pack(padx=5, pady=5)
 
-        # строка ввода
         self.entry = tk.Entry(root, width=80,
                               bg="black", fg="white", insertbackground="white")
         self.entry.pack(padx=5, pady=5)
 
-        # биндинг Enter
         self.entry.bind("<Return>", self.execute_command)
 
-        # вывести первый промпт
         self.append_text(self.logic.vfs_name)
 
-        # курсор в строке ввода
         self.entry.focus_set()
 
     def append_text(self, msg: str):
@@ -69,7 +66,6 @@ class MiniShellGUI:
         command = self.entry.get().strip()
         self.entry.delete(0, tk.END)
 
-        # показать введённую команду
         self.append_text(command + "\n")
 
         result = self.logic.process_command(command)
@@ -81,10 +77,8 @@ class MiniShellGUI:
         if result:
             self.append_text(result + "\n")
 
-        # новый промпт
         self.append_text(self.logic.vfs_name)
 
-        # вернуть курсор в строку ввода
         self.entry.focus_set()
 
 
